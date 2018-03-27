@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/Helpers/index.js | lesswork-framework</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="A nodejs based framework for serverless applications."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="lesswork-framework"><meta property="twitter:description" content="A nodejs based framework for serverless applications."></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/lessworkjs/framework"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  </ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/Helpers/index.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+/*
+ * adonis-ignitor
+ *
+ * (c) Harminder Virk &lt;virk@adonisjs.com&gt;
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+const Macroable = require(&apos;macroable&apos;);
+const path = require(&apos;path&apos;)
+const pify = require(&apos;pify&apos;)
+const fs = require(&apos;fs&apos;);
+
+/**
+ * This class returns absolute path to commonly
+ * used AdonisJs directories.
+ *
+ * @namespace Lesswork/Helpers
+ * @alias Helpers
+ * @singleton
+ * @group Core
+ *
+ * @class Helpers
+ * @constructor
+ */
+class Helpers extends Macroable {
+  constructor(appRoot) {
+    super()
+
+    this._appRoot = appRoot
+  }
+
+  requireIfExists(file) {
+    if (!fs.existsSync(file)) {
+      return false;
+    }
+
+    return require(file);
+  }
+
+  /**
+   * Returns path to the application root
+   *
+   * @method appRoot
+   *
+   * @param  {String}   [toFile = &apos;&apos;]
+   *
+   * @return {String}
+   */
+  appRoot(toFile = &apos;&apos;) {
+    return path.join(this._appRoot, toFile)
+  }
+
+  /**
+   * Returns path to the public directory or a
+   * specific file to the public directory.
+   *
+   * ## Note
+   * This method does not check the existence of
+   * file.
+   *
+   * @method publicPath
+   *
+   * @param  {String}   [toFile = &apos;&apos;]
+   *
+   * @return {String}
+   */
+  publicPath(toFile = &apos;&apos;) {
+    return path.join(this._appRoot, &apos;/public&apos;, toFile)
+  }
+
+  /**
+   * Returns path to the config directory.
+   *
+   * ## Note
+   * This method does not check the existence of
+   * file.
+   *
+   * @method configPath
+   *
+   * @return {String}
+   */
+  configPath(toFile = &apos;&apos;) {
+    return path.join(this._appRoot, &apos;/config&apos;, toFile)
+  }
+
+  /**
+   * Returns path to the resources directory or a
+   * specific file to the resources directory.
+   *
+   * ## Note
+   * This method does not check the existence of
+   * file.
+   *
+   * @method resourcesPath
+   *
+   * @param  {String}   [toFile = &apos;&apos;]
+   *
+   * @return {String}
+   */
+  resourcesPath(toFile = &apos;&apos;) {
+    return path.join(this._appRoot, &apos;/resources&apos;, toFile)
+  }
+
+  /**
+   * Returns path to the views directory or a
+   * specific file to the views directory.
+   *
+   * ## Note
+   * This method does not check the existence of
+   * file.
+   *
+   * @method viewsPath
+   *
+   * @param  {String}   [toFile = &apos;&apos;]
+   *
+   * @return {String}
+   */
+  viewsPath(toFile = &apos;&apos;) {
+    return path.join(this._appRoot, &apos;/resources/views&apos;, toFile)
+  }
+
+  /**
+   * Returns path to the database directory or a
+   * specific file to the database directory.
+   *
+   * ## Note
+   * This method does not check the existence of
+   * file.
+   *
+   * @method databasePath
+   *
+   * @param  {String}   [toFile = &apos;&apos;]
+   *
+   * @return {String}
+   */
+  databasePath(toFile = &apos;&apos;) {
+    return path.join(this._appRoot, &apos;/database&apos;, toFile)
+  }
+
+  /**
+   * Returns path to the migrations directory or a
+   * specific file to the migrations directory.
+   *
+   * ## Note
+   * This method does not check the existence of
+   * file.
+   *
+   * @method migrationsPath
+   *
+   * @param  {String}   [toFile = &apos;&apos;]
+   *
+   * @return {String}
+   */
+  migrationsPath(toFile = &apos;&apos;) {
+    return path.join(this._appRoot, &apos;/database/migrations&apos;, toFile)
+  }
+
+  /**
+   * Returns path to the seeds directory or a
+   * specific file to the seeds directory.
+   *
+   * ## Note
+   * This method does not check the existence of
+   * file.
+   *
+   * @method seedsPath
+   *
+   * @param  {String}   [toFile = &apos;&apos;]
+   *
+   * @return {String}
+   */
+  seedsPath(toFile = &apos;&apos;) {
+    return path.join(this._appRoot, &apos;/database/seeds&apos;, toFile)
+  }
+
+  /**
+   * Returns path to the tmp directory or a
+   * specific file to the tmp directory.
+   *
+   * ## Note
+   * This method does not check the existence of
+   * file.
+   *
+   * @method tmpPath
+   *
+   * @param  {String}   [toFile = &apos;&apos;]
+   *
+   * @return {String}
+   */
+  tmpPath(toFile = &apos;&apos;) {
+    return path.join(this._appRoot, &apos;/tmp&apos;, toFile)
+  }
+
+  /**
+   * Promisify callback style functions
+   *
+   * @method promisify
+   *
+   * @param  {Function} fn
+   * @param  {Object}   options
+   *
+   * @return {Promise}
+   */
+  promisify(fn, options) {
+    return pify(fn, options)
+  }
+
+  /**
+   * Tells whether the process has been started by
+   * ace command.
+   *
+   * @method isAceCommand
+   *
+   * @return {Boolean}
+   */
+  isAceCommand() {
+    const processFile = process.mainModule.filename
+    if (processFile.endsWith(&apos;ace&apos;)) {
+      return true
+    }
+
+    /**
+     * When command is executed via `adonis cli`, then ace is a children
+     * of the process mainModule
+     */
+    return !!process.mainModule.children.find((child) =&gt; child.filename.endsWith(&apos;ace&apos;))
+  }
+}
+
+module.exports = Helpers</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

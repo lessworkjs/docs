@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/Exception/index.js | lesswork-framework</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="A nodejs based framework for serverless applications."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="lesswork-framework"><meta property="twitter:description" content="A nodejs based framework for serverless applications."></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/lessworkjs/framework"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  </ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/Exception/index.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;
+
+const NE = require(&apos;node-exceptions&apos;)
+
+/**
+ * RuntimeException Class
+ * 
+ * @class RuntimeException
+ */
+class RuntimeException extends NE.RuntimeException {
+
+  /**
+   * default error code to be used for raising
+   * exceptions
+   *
+   * @return {Number}
+   */
+  static get defaultErrorCode() {
+    return 500
+  }
+
+  /**
+   * this exception is thrown when a route action is referenced
+   * inside a view but not registered within the routes file.
+   *
+   * @param  {String} action
+   * @param  {Number} [code=500]
+   *
+   * @return {Object}
+   */
+  static missingRouteAction(action, code) {
+    return new this(`The action ${action} has not been found`, code || this.defaultErrorCode, &apos;E_MISSING_ROUTE_ACTION&apos;)
+  }
+
+  /**
+   * this exception is thrown when a route is referenced inside
+   * a view but not registered within the routes file.
+   *
+   * @param  {String} route
+   * @param  {Number} [code=500]
+   *
+   * @return {Object}
+   */
+  static missingRoute(route, code) {
+    return new this(`The route ${route} has not been found`, code || this.defaultErrorCode, &apos;E_MISSING_ROUTE&apos;)
+  }
+
+  /**
+   * this exceptions is raised when mac is invalid when
+   * trying to encrypt data
+   *
+   * @param  {Number} [code=500]
+   *
+   * @return {Object}
+   */
+  static invalidEncryptionMac(code) {
+    return new this(&apos;The MAC is invalid&apos;, code || this.defaultErrorCode, &apos;E_INVALID_ENCRYPTION_MAC&apos;)
+  }
+
+  /**
+   * this exception is raised when encryption payload is not valid
+   *
+   * @param  {Number} [code=500]
+   *
+   * @return {Object}
+   */
+  static invalidEncryptionPayload(code) {
+    return new this(&apos;The payload is invalid&apos;, code || this.defaultErrorCode, &apos;E_INVALID_ENCRYPTION_PAYLOAD&apos;)
+  }
+
+  /**
+   * this exception is raised when expected value is
+   * not a valid json object.
+   *
+   * @param  {Number} [code=500]
+   *
+   * @return {Object}
+   */
+  static malformedJSON(code) {
+    return new this(&apos;The payload is not a json object&apos;, code || this.defaultErrorCode, &apos;E_MALFORMED_JSON&apos;)
+  }
+
+  /**
+   * this exception is raised when an operation is attempted
+   * on a file that has been deleted
+   *
+   * @param  {Number} [code=500]
+   *
+   * @return {Object}
+   */
+  static fileDeleted(code) {
+    return new this(&apos;The file has already been deleted&apos;, code || this.defaultErrorCode, &apos;E_FILE_DELETED&apos;)
+  }
+
+  /**
+   * this exception is raised when encryption class is not
+   * able to decrypt a given piece of data
+   *
+   * @param  {Number} [code=500]
+   *
+   * @return {Object}
+   */
+  static decryptFailed(code) {
+    return new this(&apos;Could not decrypt the data&apos;, code || this.defaultErrorCode, &apos;E_ENCRYPTION_DECRYPT_FAILED&apos;)
+  }
+
+  /**
+   * this exception is raised when the encryption cipher is
+   * not supported or app key length is not in-sync with
+   * given cipher
+   *
+   * @param  {Number} [code=500]
+   *
+   * @return {Object}
+   */
+  static invalidEncryptionCipher(code) {
+    return new this(&apos;The only supported ciphers are AES-128-CBC and AES-256-CBC with the correct key lengths&apos;, code || this.defaultErrorCode, &apos;E_INVALID_ENCRPYTION_CIPHER&apos;)
+  }
+
+  /**
+   * this exception is raised when app key is missing
+   * inside config/app.js file.
+   *
+   * @param  {String} message
+   * @param  {Number} [code=500]
+   *
+   * @return {Object}
+   */
+  static missingAppKey(message, code) {
+    return new this(message, code || this.defaultErrorCode, &apos;E_MISSING_APPKEY&apos;)
+  }
+
+  /**
+   * this exception is raised when an uknown
+   * session driver is used
+   *
+   * @param  {String} driver
+   * @param  {Number} [code=500]
+   *
+   * @return {Object}
+   */
+  static invalidSessionDriver(driver, code) {
+    return new this(`Unable to locate ${driver} session driver`, code || this.defaultErrorCode, &apos;E_INVALID_SESSION_DRIVER&apos;)
+  }
+
+  /**
+   * this exception is raised when a named middleware is used
+   * but not registered
+   *
+   * @param  {String} name
+   * @param  {Number} [code=500]
+   *
+   * @return {Object}
+   */
+  static missingNamedMiddleware(name, code) {
+    return new this(`${name} is not registered as a named middleware`, code || this.defaultErrorCode, &apos;E_MISSING_NAMED_MIDDLEWARE&apos;)
+  }
+
+}
+
+class InvalidArgumentException extends NE.InvalidArgumentException {
+
+  /**
+   * default error code to be used for raising
+   * exceptions
+   *
+   * @return {Number}
+   */
+  static get defaultErrorCode() {
+    return 500
+  }
+
+  /**
+   * this exception is raised when a method parameter is
+   * missing but expected to exist.
+   *
+   * @param  {String} message
+   * @param  {Number} [code=500]
+   *
+   * @return {Object}
+   */
+  static missingParameter(message, code) {
+    return new this(message, code || this.defaultErrorCode, &apos;E_MISSING_PARAMETER&apos;)
+  }
+
+  /**
+   * this exception is raised when a method parameter value
+   * is invalid.
+   *
+   * @param  {String} message
+   * @param  {Number} [code=500]
+   *
+   * @return {Object}
+   */
+  static invalidParameter(message, code) {
+    return new this(message, code || this.defaultErrorCode, &apos;E_INVALID_PARAMETER&apos;)
+  }
+
+  /**
+   * this exception is raised when unable to find
+   * an event with a given name
+   *
+   * @param  {String} event
+   * @param  {String} name
+   * @param  {Number} [code=500]
+   *
+   * @return {Object}
+   */
+  static missingEvent(event, name, code) {
+    return new this(`Cannot find an event with ${name} name for ${event} event`, code || this.defaultErrorCode, &apos;E_MISSING_NAMED_EVENT&apos;)
+  }
+
+}
+
+module.exports = {
+  RuntimeException,
+  InvalidArgumentException,
+  HttpException: NE.HttpException
+}</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

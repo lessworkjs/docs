@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/Config/index.js | lesswork-framework</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="A nodejs based framework for serverless applications."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="lesswork-framework"><meta property="twitter:description" content="A nodejs based framework for serverless applications."></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/lessworkjs/framework"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  </ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/Config/index.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;
+
+const Macroable = require(&apos;macroable&apos;);
+
+/**
+ * adonis-framework
+ *
+ * (c) Harminder Virk &lt;virk@adonisjs.com&gt;
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+const _ = require(&apos;lodash&apos;)
+const requireAll = require(&apos;require-all&apos;)
+const debug = require(&apos;debug&apos;)(&apos;adonis:framework&apos;)
+
+/**
+ * Manages configuration by recursively reading all
+ * `.js` files from the `config` folder.
+ *
+ * @alias Config
+ * @binding Lesswork/Config
+ * @group Core
+ * @singleton
+ *
+ * @class Config
+ * @constructor
+ *
+ * @param {String} configPath Absolute path from where to load the config files from
+ */
+class Config extends Macroable {
+  constructor(configPath) {
+    super()
+
+    this._configPath = configPath
+    this._config = {}
+    this.syncWithFileSystem()
+  }
+
+  /**
+   * Syncs the in-memory config store with the
+   * file system. Ideally you should keep your
+   * config static and never update the file
+   * system on the fly.
+   *
+   * @method syncWithFileSystem
+   *
+   * @return {void}
+   */
+  syncWithFileSystem() {
+    try {
+      this._config = requireAll({
+        dirname: this._configPath,
+        filter: /(.*)\.js$/
+      })
+      debug(&apos;loaded all config files from %s&apos;, this._configPath)
+    } catch (error) {
+      if (error.code !== &apos;ENOENT&apos;) {
+        throw error
+      }
+    }
+  }
+
+  /**
+   * Get value for a given key from the config store. Nested
+   * values can be accessed via (dot notation). Values
+   * referenced with `self::` are further resolved.
+   *
+   * @method get
+   *
+   * @param  {String} key
+   * @param  {Mixed} [defaultValue]
+   *
+   * @return {Mixed}
+   *
+   * @example
+   * ```
+   * Config.get(&apos;database.mysql&apos;)
+   *
+   * // referenced
+   * {
+   *   prodMysql: &apos;self::database.mysql&apos;
+   * }
+   * Config.get(&apos;database.prodMysql&apos;)
+   * ```
+   */
+  get(key, defaultValue) {
+    return _.get(this._config, key, defaultValue)
+  }
+
+  /**
+   * Merge default values with the resolved values.
+   * This is to provide a default set of values
+   * when it does not exists. This method uses
+   * lodash `_.mergeWith` method.
+   *
+   * @method merge
+   *
+   * @param  {String}   key
+   * @param  {Object}   defaultValues
+   * @param  {Function} [customizer]
+   *
+   * @return {Object}
+   *
+   * @example
+   * ```js
+   * Config.merge(&apos;services.redis&apos;, {
+   *   port: 6379,
+   *   host: &apos;localhost&apos;
+   * })
+   * ```
+   */
+  merge(key, defaultValues, customizer) {
+    const value = this.get(key, {})
+    return _.mergeWith(defaultValues, value, customizer)
+  }
+
+  /**
+   * Update value for a given key inside the config store. If
+   * value does not exists it will be created.
+   *
+   * ## Note
+   * This method updates the value in memory and not on the
+   * file system.
+   *
+   * @method set
+   *
+   * @param  {String} key
+   * @param  {Mixed}  value
+   *
+   * @example
+   * ```js
+   * Config.set(&apos;database.mysql.host&apos;, &apos;127.0.0.1&apos;)
+   *
+   * // later get the value
+   * Config.get(&apos;database.mysql.host&apos;)
+   * ```
+   */
+  set(key, value) {
+    _.set(this._config, key, value)
+  }
+}
+
+module.exports = Config</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
