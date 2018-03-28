@@ -426,9 +426,27 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/kernel/run.js",
+    "file/src/Kernel/Run.js.html",
+    "src/Kernel/Run.js",
+    "file"
+  ],
+  [
+    "src/kernel/index.js",
+    "file/src/Kernel/index.js.html",
+    "src/Kernel/index.js",
+    "file"
+  ],
+  [
     "src/lintl/index.js",
     "file/src/Lintl/index.js.html",
     "src/Lintl/index.js",
+    "file"
+  ],
+  [
+    "src/middleware/index.js",
+    "file/src/Middleware/index.js.html",
+    "src/Middleware/index.js",
     "file"
   ],
   [
@@ -441,6 +459,12 @@ window.esdocSearchIndex = [
     "src/response/index.js",
     "file/src/Response/index.js.html",
     "src/Response/index.js",
+    "file"
+  ],
+  [
+    "src/route/helpers.js",
+    "file/src/Route/helpers.js.html",
+    "src/Route/helpers.js",
     "file"
   ],
   [

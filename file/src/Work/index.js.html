@@ -38,7 +38,7 @@
 
 const work = require(&apos;lesswork-cmd&apos;);
 
-module.exports = function (app, basePath) {
+module.exports = function (appConfig, testing) {
   let Commands = require(&apos;require-all&apos;)({
     dirname: __dirname + &apos;/../Console/Commands&apos;,
     recursive: true,
@@ -47,7 +47,7 @@ module.exports = function (app, basePath) {
 
   Commands = Object.assign({}, Commands.Console, Commands.Make);
 
-  const AppCommands = app.commands;
+  const AppCommands = appConfig.commands;
 
   Object.keys(Commands).forEach((name) =&gt; {
     work.addCommand(Commands[name]);
@@ -63,6 +63,10 @@ module.exports = function (app, basePath) {
   });
 
   work.wireUpWithCommander();
+
+  if (testing) {
+    return work;
+  }
 
   work.invoke();
 };</code></pre>

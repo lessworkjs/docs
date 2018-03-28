@@ -36,6 +36,10 @@
 <div class="content" data-ice="content"><h1 data-ice="title">src/Lintl/index.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
 
+/**
+ * WIP
+ */
+
 const Macroable = require(&apos;macroable&apos;);
 const Intl = require(&apos;intl&apos;);
 const IntlMessageFormat = require(&apos;intl-messageformat&apos;);
@@ -46,7 +50,7 @@ const _ = require(&apos;lodash&apos;);
  * Lintl Class
  *
  * @alias Lintl
- * @binding Lesswork/Lintl
+ * @binding Lesswork/Src/Lintl
  * @group Core
  *
  * @class Lintl
@@ -63,7 +67,7 @@ class Lintl extends Macroable {
   }
 
   _dateFormat(date, locale, fallback = true) {
-    locale = locale || use(&apos;App&apos;).getLocale();
+    locale = locale || App.getLocale();
 
     if (fallback) {
       fallback = this.fallback;
@@ -78,7 +82,7 @@ class Lintl extends Macroable {
 
   _numberFormat(...args) {
     let number = args[0];
-    let locale = use(&apos;App&apos;).getLocale();
+    let locale = App.getLocale();
     let fallback = true;
     let format = false;
 
@@ -127,7 +131,7 @@ class Lintl extends Macroable {
       }
     });
 
-    const locales = [locale || use(&apos;App&apos;).getLocale()];
+    const locales = [locale || App.getLocale()];
 
     if (!locales.length) {
       return hash;

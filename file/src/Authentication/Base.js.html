@@ -36,9 +36,14 @@
 <div class="content" data-ice="content"><h1 data-ice="title">src/Authentication/Base.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
 
+/**
+ * Authentication Base Class
+ * 
+ * @class Base
+ */
 class Base {
   callback() {
-    state.callback(null, this.IAMPolicy(...arguments));
+    State.callback(null, this.IAMPolicy(...arguments));
   }
 
   IAMPolicy(principalId, effect, resource, context) {
@@ -57,11 +62,11 @@ class Base {
   }
 
   getAuthorizationToken() {
-    if (!state.event(&apos;authorizationToken&apos;)) {
+    if (!State.event(&apos;authorizationToken&apos;)) {
       return false;
     }
 
-    const token = state.event(&apos;authorizationToken&apos;).split(&apos; &apos;);
+    const token = State.event(&apos;authorizationToken&apos;).split(&apos; &apos;);
 
     if (token.length === 2) {
       return token[1];
@@ -71,11 +76,11 @@ class Base {
   }
 
   deny(user) {
-    this.callback(user, &apos;Deny&apos;, state.event(&apos;methodArn&apos;), {});
+    this.callback(user, &apos;Deny&apos;, State.event(&apos;methodArn&apos;), {});
   }
 
   approve(authString, user) {
-    this.callback(authString, &apos;Allow&apos;, state.event(&apos;methodArn&apos;).split(&apos;/&apos;).slice(0, 2).join(&apos;/&apos;) + &apos;/*&apos;, {
+    this.callback(authString, &apos;Allow&apos;, State.event(&apos;methodArn&apos;).split(&apos;/&apos;).slice(0, 2).join(&apos;/&apos;) + &apos;/*&apos;, {
       user
     });
   }

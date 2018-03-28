@@ -53,7 +53,7 @@ const fs = require(&apos;fs&apos;);
  * This class returns absolute path to commonly
  * used AdonisJs directories.
  *
- * @namespace Lesswork/Helpers
+ * @binding Lesswork/Src/Helpers
  * @alias Helpers
  * @singleton
  * @group Core
@@ -66,6 +66,18 @@ class Helpers extends Macroable {
     super()
 
     this._appRoot = appRoot
+  }
+
+  requireByName(hash) {
+    hash = hash.split(&apos;@&apos;);
+    const route = hash[0];
+    const method = hash[1];
+
+    try {
+      return make(use(route))[method]();
+    } catch (e) {
+      throw new Error(`Unable to load method &apos;${method}&apos; on &apos;${route}&apos;\n${Helpers.appRoot(hash[0])}.js\n${e}`);
+    }
   }
 
   requireIfExists(file) {
@@ -118,8 +130,11 @@ class Helpers extends Macroable {
    *
    * @return {String}
    */
-  configPath(toFile = &apos;&apos;) {
-    return path.join(this._appRoot, &apos;/config&apos;, toFile)
+  configPath() {
+    if (arguments[0]) {
+      throw new Error(&apos;You should never read a config file from the config directory and instead use config provider.&apos;)
+    }
+    return path.join(this._appRoot, &apos;/config&apos;)
   }
 
   /**
@@ -263,6 +278,27 @@ class Helpers extends Macroable {
      * of the process mainModule
      */
     return !!process.mainModule.children.find((child) =&gt; child.filename.endsWith(&apos;ace&apos;))
+  }
+
+  /**
+   * makes complete namespace for a given path and base
+   * namespace
+   *
+   * @method makeNameSpace
+   *
+   * @param  {String}      baseNameSpace
+   * @param  {String}      toPath
+   * @return {String}
+   *
+   * @public
+   */
+  makeNameSpace(baseNameSpace, toPath) {
+    const appNameSpace = &apos;App&apos;;
+
+    if (toPath.startsWith(`${appNameSpace}/`)) {
+      return toPath
+    }
+    return path.normalize(`${appNameSpace}/${baseNameSpace}/${toPath}`)
   }
 }
 

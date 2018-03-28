@@ -42,7 +42,7 @@ const Macroable = require(&apos;macroable&apos;);
  * State Class
  *
  * @alias State
- * @binding Lesswork/State
+ * @binding Lesswork/Src/State
  * @group Core
  *
  * @class State
@@ -52,9 +52,7 @@ class State extends Macroable {
     this.state = {
       event: args[0] || {},
       context: args[1] || {},
-      callback: args[2] || function () {
-        console.log(&apos;State Callback:&apos;, arguments);
-      }
+      callback: args[2] || function () {}
     };
 
     this.state.context.callbackWaitsForEmptyEventLoop = false;

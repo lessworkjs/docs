@@ -43,7 +43,7 @@ const path = require(&apos;path&apos;);
  * App Class
  *
  * @alias App
- * @binding Lesswork/App
+ * @binding Lesswork/Src/App
  * @group Core
  *
  * @class App
@@ -54,39 +54,55 @@ class App extends Macroable {
   }
 
   registerGlobals() {
-    global.app = use(&apos;App&apos;);
+    global.App = use(&apos;App&apos;);
     global.Helpers = use(&apos;Helpers&apos;);
-    global.config = use(&apos;Config&apos;);
-    global.response = use(&apos;Response&apos;);
-    global.request = use(&apos;Request&apos;);
-    global.state = use(&apos;State&apos;);
+    global.Config = use(&apos;Config&apos;);
+    global.config = function () {
+      return use(&apos;Config&apos;).get(...arguments);
+    };
+
+    global.Env = use(&apos;Env&apos;);
+    global.env = function () {
+      return use(&apos;Env&apos;).get(...arguments);
+    };
+
+    global.Response = use(&apos;Response&apos;);
+    global.response = function () {
+      return Response.success(...arguments);
+    }
+
+    global.Request = use(&apos;Request&apos;);
+    global.State = use(&apos;State&apos;);
     global.EXP = use(&apos;Exception&apos;);
-    global.Route = use(&apos;Route&apos;);
 
     this.registerLintl();
 
-    use(&apos;Event&apos;).fire(&apos;app:registerGlobals&apos;);
+    global.Event = use(&apos;Event&apos;);
+
+    Event.fire(&apos;app:registerGlobals&apos;);
   }
 
   registerLintl() {
-    const Lintl = use(&apos;Lintl&apos;);
+    global.Lintl = use(&apos;Lintl&apos;);
 
     global.numberFormat = Lintl.numberFormat;
     global.dateFormat = Lintl.dateFormat;
     global.__ = Lintl.translate;
     global.lang = global.__;
 
-    this.setLocale(config.get(&apos;app.locale&apos;));
+    this.setLocale(Config.get(&apos;app.locale&apos;));
   }
 
-  run(callback) {
+  * run(callback) {
     if (typeof callback === &apos;string&apos;) {
-      callback = Route(callback);
+      callback = Helpers.requireByName(callback);
     }
 
-    return require(&apos;co&apos;)(callback).catch(error =&gt; {
+    const results = yield require(&apos;co&apos;)(callback).catch(error =&gt; {
       require(&apos;../../lib/error&apos;)(error);
     });
+
+    return results;
   }
 
   environment() {

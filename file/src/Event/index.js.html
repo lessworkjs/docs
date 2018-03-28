@@ -53,12 +53,13 @@ const _ = require(&apos;lodash&apos;)
 const util = require(&apos;../../lib/util&apos;)
 const co = require(&apos;co&apos;)
 const Macroable = require(&apos;macroable&apos;);
+const CE = require(&apos;../Exception&apos;);
 
 /**
  * Event Class
  *
  * @alias Event
- * @binding Lesswork/Event
+ * @binding Lesswork/Src/Event
  * @group Core
  *
  * @class Event
@@ -212,7 +213,7 @@ class Event extends Macroable {
   removeListener(event, name) {
     const handler = this.namedListeners[name]
     if (!handler) {
-      //throw CE.InvalidArgumentException.missingEvent(event, name)
+      throw CE.InvalidArgumentException.missingEvent(event, name)
       throw (event, name)
     }
     this.emitter.removeListener(event, handler)
@@ -226,7 +227,10 @@ class Event extends Macroable {
    * @public
    */
   removeListeners(event) {
-    event ? this.emitter.removeAllListeners(event) : this.emitter.removeAllListeners()
+    if (event) {
+      return this.emitter.removeAllListeners(event)
+    }
+    this.emitter.removeAllListeners()
   }
 
   /**

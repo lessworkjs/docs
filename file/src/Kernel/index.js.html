@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../../">
-  <title data-ice="title">src/Response/index.js | lesswork-framework</title>
+  <title data-ice="title">src/Kernel/index.js | lesswork-framework</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -33,76 +33,39 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">src/Response/index.js</h1>
+<div class="content" data-ice="content"><h1 data-ice="title">src/Kernel/index.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
 
-const Macroable = require(&apos;macroable&apos;);
+const Run = require(&apos;./Run&apos;);
 
-/**
- * Response Class
- *
- * @alias Response
- * @binding Lesswork/Src/Response
- * @group Core
- *
- * @class Response
- */
-class Response extends Macroable {
-  constructor(state) {
-    super();
-    this.state = state;
+module.exports = function (...args) {
+  if (process.env.LESSWORK_FUNCTION_MODE) {
+    return args;
   }
 
-  body(code, body) {
-    return {
-      statusCode: code,
-      headers: {
-        &apos;Content-Type&apos;: &apos;application/json&apos;,
-        &apos;Access-Control-Allow-Origin&apos;: &apos;*&apos;,
-        &apos;Access-Control-Allow-Credentials&apos;: true
-      },
-      body: body ? JSON.stringify(body) : {},
-      isBase64Encoded: false
-    };
+  const state = args[0];
+  const lastArg = args[args.length - 1];
+
+  let callback = args[1];
+
+  if ((args.length === 3 &amp;&amp; typeof lastArg !== &apos;object&apos;) || args.length === 4) {
+    callback = args[2];
   }
 
-  error(error, statusCode) {
-    this.state.callback(null, this.body(statusCode || 500, error));
-  }
+  require(&apos;../../lib/kernel&apos;)(process.cwd())(function () {
+    Event.fire(&apos;app:start&apos;);
 
-  successOrError(...args) {
-    if (args[0] !== null) {
-      return this.error(args[0]);
-    }
+    State.set(state);
 
-    this.success(...args.slice(1));
-  }
+    use(&apos;App/Http/Kernel&apos;);
 
-  success(...args) {
-    let statusCode = 200;
-    let data = null;
+    new Run(callback, lastArg);
 
-    if (!args) {
-      statusCode = 204;
-    }
+    Event.fire(&apos;app:end&apos;);
+  });
 
-    if (args[0]) {
-      data = args[0];
-    }
-
-    if (args[1] &amp;&amp; typeof args[1] === &apos;function&apos;) {
-      data = args[1](data);
-    }
-
-    if (args[1] &amp;&amp; typeof args[1] === &apos;number&apos; || args[2]) {
-      statusCode = args[2] || args[1];
-    }
-
-    this.state.callback(null, this.body(statusCode, data));
-  }
-}
-
-module.exports = Response;</code></pre>
+  return args;
+};</code></pre>
 
 </div>
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../../">
-  <title data-ice="title">src/Response/index.js | lesswork-framework</title>
+  <title data-ice="title">src/Route/helpers.js | lesswork-framework</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -33,76 +33,39 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">src/Response/index.js</h1>
-<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
-
-const Macroable = require(&apos;macroable&apos;);
+<div class="content" data-ice="content"><h1 data-ice="title">src/Route/helpers.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;
 
 /**
- * Response Class
- *
- * @alias Response
- * @binding Lesswork/Src/Response
- * @group Core
- *
- * @class Response
+ * adonis-framework
+ * Copyright(c) 2015-2016 Harminder Virk
+ * MIT Licensed
  */
-class Response extends Macroable {
-  constructor(state) {
-    super();
-    this.state = state;
+
+let helpers = module.exports = {}
+
+/**
+ * returns an array of middleware concatenated with
+ * the actual route handler.
+ *
+ * @param  {Object}         resolvedRoute
+ * @param  {Object}         middleware
+ * @param  {String}         appNamespace
+ * @return {Array}
+ *
+ * @private
+ */
+
+helpers.makeMiddlewareChain = function (middleware, finalHandler, isGlobal, resolvedRoute) {
+  if (isGlobal) {
+    return middleware.resolve([], true).concat([{
+      instance: null,
+      method: finalHandler
+    }])
   }
-
-  body(code, body) {
-    return {
-      statusCode: code,
-      headers: {
-        &apos;Content-Type&apos;: &apos;application/json&apos;,
-        &apos;Access-Control-Allow-Origin&apos;: &apos;*&apos;,
-        &apos;Access-Control-Allow-Credentials&apos;: true
-      },
-      body: body ? JSON.stringify(body) : {},
-      isBase64Encoded: false
-    };
-  }
-
-  error(error, statusCode) {
-    this.state.callback(null, this.body(statusCode || 500, error));
-  }
-
-  successOrError(...args) {
-    if (args[0] !== null) {
-      return this.error(args[0]);
-    }
-
-    this.success(...args.slice(1));
-  }
-
-  success(...args) {
-    let statusCode = 200;
-    let data = null;
-
-    if (!args) {
-      statusCode = 204;
-    }
-
-    if (args[0]) {
-      data = args[0];
-    }
-
-    if (args[1] &amp;&amp; typeof args[1] === &apos;function&apos;) {
-      data = args[1](data);
-    }
-
-    if (args[1] &amp;&amp; typeof args[1] === &apos;number&apos; || args[2]) {
-      statusCode = args[2] || args[1];
-    }
-
-    this.state.callback(null, this.body(statusCode, data));
-  }
-}
-
-module.exports = Response;</code></pre>
+  const routeMiddleware = middleware.resolve(middleware.formatNamedMiddleware(resolvedRoute.middlewares), false)
+  return routeMiddleware.concat([finalHandler])
+}</code></pre>
 
 </div>
 

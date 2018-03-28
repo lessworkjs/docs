@@ -38,6 +38,11 @@
 
 const jwt = require(&apos;jsonwebtoken&apos;);
 
+/**
+ * Authentication JWT Class
+ * 
+ * @class Jwt
+ */
 class Jwt extends require(&apos;./Base&apos;) {
   auth(secret) {
     const authString = this.getAuthorizationToken();

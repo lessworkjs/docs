@@ -47,10 +47,18 @@
 
 const _ = require(&apos;lodash&apos;)
 const path = require(&apos;path&apos;)
-const dotenv = require(&apos;dotenv&apos;)
 const fs = require(&apos;fs&apos;)
 const debug = require(&apos;debug&apos;)(&apos;adonis:framework&apos;)
-const Macroable = require(&apos;macroable&apos;);
+
+const jsconfig = function (file) {
+  try {
+    return require(file)();
+  } catch (e) {
+    return {
+      error: e
+    }
+  }
+}
 
 /**
  * Manages the application environment variables by
@@ -63,7 +71,7 @@ const Macroable = require(&apos;macroable&apos;);
  * Can define different location by setting `ENV_PATH`
  * environment variable.
  *
- * @binding Lesswork/Env
+ * @binding Adonis/Src/Env
  * @group Core
  * @alias Env
  * @singleton
@@ -71,10 +79,8 @@ const Macroable = require(&apos;macroable&apos;);
  * @class Env
  * @constructor
  */
-class Env extends Macroable {
+class Env {
   constructor(appRoot) {
-    super()
-
     this.appRoot = appRoot
     const bootedAsTesting = process.env.NODE_ENV === &apos;testing&apos;
     const env = this.load(this.getEnvPath(), false) // do not overwrite at first place
@@ -92,7 +98,7 @@ class Env extends Macroable {
      * under testing mode
      */
     if (bootedAsTesting) {
-      this.load(&apos;.env.testing&apos;)
+      this.load(&apos;.env.testing.js&apos;)
     }
   }
 
@@ -109,7 +115,7 @@ class Env extends Macroable {
    * @private
    */
   _interpolate(env, envConfig) {
-    const matches = env.match(/\$([a-zA-Z0-9_]+)|\${([a-zA-Z0-9_]+)}/g) || []
+    const matches = String(env).match(/\$([a-zA-Z0-9_]+)|\${([a-zA-Z0-9_]+)}/g) || []
     _.each(matches, (match) =&gt; {
       const key = match.replace(/\$|{|}/g, &apos;&apos;)
       const variable = envConfig[key] || process.env[key] || &apos;&apos;
@@ -136,7 +142,8 @@ class Env extends Macroable {
     }
 
     try {
-      const envConfig = dotenv.parse(fs.readFileSync(options.path, options.encoding))
+
+      const envConfig = jsconfig(options.path)
 
       /**
        * Dotenv doesn&apos;t overwrite existing env variables, so we

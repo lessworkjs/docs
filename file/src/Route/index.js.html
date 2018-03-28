@@ -36,16 +36,87 @@
 <div class="content" data-ice="content"><h1 data-ice="title">src/Route/index.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
 
-module.exports = function (hash) {
-  hash = hash.split(&apos;@&apos;);
-  const route = hash[0];
-  const method = hash[1];
+const Kernel = require(&apos;../Kernel&apos;);
+const Macroable = require(&apos;macroable&apos;);
 
-  try {
-    return make(use(route))[method]();
-  } catch (e) {
-    throw `Unable to load method &apos;${method}&apos; on &apos;${route}&apos;\n${Helpers.appRoot(hash[0])}.js\n${e}`;
+/**
+ * Route Class
+ *
+ * @alias Route
+ * @binding Lesswork/Src/Route
+ * @group Core
+ *
+ * @class Request
+ */
+class Route extends Macroable {
+  constructor(args) {
+    super();
+
+    this._middleware = null;
+    this._authorizer = null;
+    this._arguments = args;
+
   }
+
+  setArgs(args) {
+    this._arguments = args;
+    return this;
+  }
+
+  auth(authorizer) {
+    this._authorizer = authorizer;
+    return this;
+  }
+
+  middleware(middleware) {
+    this._middleware = (typeof middleware === &apos;object&apos;) ? middleware : [middleware];
+    return this;
+  }
+
+  run(method, path, callback, options = {}) {
+    let middleware = this._middleware;
+    let authorizer = this._authorizer;
+
+    return Kernel(this._arguments, path, callback, Object.assign({
+      method,
+      middleware,
+      authorizer,
+    }, options));
+  }
+
+  get() {
+    return this.run(&apos;get&apos;, ...arguments);
+  }
+
+  post() {
+    return this.run(&apos;post&apos;, ...arguments);
+  }
+
+  put() {
+    return this.run(&apos;put&apos;, ...arguments);
+  }
+
+  patch() {
+    return this.run(&apos;patch&apos;, ...arguments);
+  }
+
+  delete() {
+    return this.run(&apos;delete&apos;, ...arguments);
+  }
+
+  options() {
+    return this.run(&apos;options&apos;, ...arguments);
+  }
+
+  connect() {
+    return this.run(&apos;connect&apos;, ...arguments);
+  }
+}
+
+const route = new Route();
+
+module.exports = function (args) {
+  return route.setArgs(args);
 };</code></pre>
 
 </div>

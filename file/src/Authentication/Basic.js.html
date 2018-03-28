@@ -36,11 +36,16 @@
 <div class="content" data-ice="content"><h1 data-ice="title">src/Authentication/Basic.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
 
+/**
+ * Authentication Basic Class
+ * 
+ * @class Basic
+ */
 class Basic extends require(&apos;./Base&apos;) {
   auth(user, pass) {
     const authString = &apos;Basic &apos; + new Buffer(user + &apos;:&apos; + pass).toString(&apos;base64&apos;);
 
-    if (typeof state.event(&apos;authorizationToken&apos;) == &apos;undefined&apos; || state.event(&apos;authorizationToken&apos;) !== authString) {
+    if (typeof State.event(&apos;authorizationToken&apos;) == &apos;undefined&apos; || State.event(&apos;authorizationToken&apos;) !== authString) {
       return this.deny(user);
     }
 

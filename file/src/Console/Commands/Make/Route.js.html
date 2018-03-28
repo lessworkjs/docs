@@ -53,11 +53,11 @@ class MakeRoute extends BaseCommand {
       name
     };
 
-    if (this.checkIfExists(Helpers.appRoot(`/app/Http/Routes/${name}Route.js`))) {
+    if (this.checkIfExists(Helpers.appRoot(`/routes/${name}.js`))) {
       return this.error(`${this.icon(&apos;error&apos;)} The route &apos;${name}&apos; has already been created.`);
     }
 
-    this.ejsToFile(&apos;route&apos;, Helpers.appRoot(`/app/Http/Routes/${name}Route.js`), data);
+    this.ejsToFile(&apos;route&apos;, Helpers.appRoot(`/routes/${name}.js`), data);
 
     this.success(`${this.icon(&apos;success&apos;)} The route &apos;${name}&apos; has been created.`);
   }

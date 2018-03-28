@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/Middleware/index.js | lesswork-framework</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="A nodejs based framework for serverless applications."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="lesswork-framework"><meta property="twitter:description" content="A nodejs based framework for serverless applications."></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/lessworkjs/framework"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  </ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/Middleware/index.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;
+
+/**
+ * adonis-framework
+ *
+ * (c) Harminder Virk &lt;virk@adonisjs.com&gt;
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+const _ = require(&apos;lodash&apos;)
+const Ioc = require(&apos;adonis-fold&apos;).Ioc
+const CE = require(&apos;../Exception&apos;)
+
+let globalMiddleware = []
+let namedMiddleware = {}
+
+/**
+ * composes a closure to an object for consistent behaviour
+ *
+ * @method  _composeFunction
+ *
+ * @param   {Function}         middleware
+ *
+ * @return  {Object}
+ *
+ * @private
+ */
+const _composeFunction = function (middleware) {
+  return {
+    instance: null,
+    method: middleware,
+    parameters: []
+  }
+}
+
+/**
+ * composes a consistent object from the actual
+ * middleware object
+ *
+ * @method  _composeObject
+ *
+ * @param   {Object}       middleware
+ *
+ * @return  {Object}
+ *
+ * @private
+ */
+const _composeObject = function (middleware) {
+  const instance = middleware.instance || null
+  const method = instance ? instance[middleware.method] : middleware.method
+  return {
+    instance,
+    method,
+    parameters: middleware.parameters
+  }
+}
+
+/**
+ * Http middleware layer to register and resolve middleware
+ * for a given HTTP request.
+ * @module Middleware
+ */
+let Middleware = module.exports = {}
+
+/**
+ * clears off all global and named middleware
+ *
+ * @method new
+ *
+ * @public
+ */
+Middleware.new = function () {
+  globalMiddleware = []
+  namedMiddleware = {}
+}
+
+/**
+ * registers a new global or named middleware. If second
+ * parameter is empty, middleware will be considered
+ * global.
+ *
+ * @method register
+ *
+ * @param  {String} [key] - unqiue key for named middleware
+ * @param  {String} namespace - Reference to the binding of Ioc container
+ *
+ * @example
+ * Middleware.register(&apos;App/Http/Middleware/Auth&apos;)
+ * Middleware.register(&apos;app&apos;, &apos;App/Http/Middleware/Auth&apos;)
+ *
+ * @public
+ */
+Middleware.register = function (key, namespace) {
+  if (!namespace) {
+    globalMiddleware.push(key)
+    return
+  }
+  namedMiddleware[key] = namespace
+}
+
+/**
+ * concats a array of middleware inside global list.
+ *
+ * @method global
+ *
+ * @param  {Array} arrayOfMiddleware
+ *
+ * @example
+ * Middleware.global([&apos;App/Http/Middleware/Auth&apos;, &apos;...&apos;])
+ *
+ * @public
+ */
+Middleware.global = function (arrayOfMiddleware) {
+  globalMiddleware = globalMiddleware.concat(_.uniq(arrayOfMiddleware))
+}
+
+/**
+ * adds an object of middleware to named list.
+ *
+ * @method named
+ *
+ * @param  {Object} namedMiddleware
+ *
+ * @example
+ * Middleware.named({&apos;auth&apos;: &apos;App/Http/Middleware/Auth&apos;}, {...})
+ *
+ * @public
+ */
+Middleware.named = function (namedMiddleware) {
+  _.each(namedMiddleware, (namespace, key) =&gt; Middleware.register(key, namespace))
+}
+
+/**
+ * returns list of global middleware
+ *
+ * @method getGlobal
+ *
+ * @return {Array}
+ *
+ * @public
+ */
+Middleware.getGlobal = function () {
+  return globalMiddleware
+}
+
+/**
+ * returns list of named middleware
+ *
+ * @method getNamed
+ *
+ * @return {Object}
+ *
+ * @public
+ */
+Middleware.getNamed = function () {
+  return namedMiddleware
+}
+
+/**
+ * fetch params defined next to named middleware while
+ * consuming them.
+ *
+ * @method fetchParams
+ *
+ * @param  {String|Undefined}    params
+ * @return {Array}
+ *
+ * @public
+ */
+Middleware.fetchParams = function (params) {
+  return params ? params.split(&apos;,&apos;) : []
+}
+
+/**
+ * returning an object of named middleware by
+ * parsing them.
+ *
+ * @method formatNamedMiddleware
+ *
+ * @param  {Array}              keys
+ * @return {Object}
+ *
+ * @example
+ * Middleware.formatNamedMiddleware([&apos;auth:basic,jwt&apos;])
+ * returns
+ * {&apos;Adonis/Middleware/Auth&apos;: [&apos;basic&apos;, &apos;jwt&apos;]}
+ *
+ * @throws {RunTimeException} If named middleware for a given
+ *                            key is not registered.
+ * @public
+ */
+Middleware.formatNamedMiddleware = function (keys) {
+  return _.reduce(keys, (structured, key) =&gt; {
+    const tokens = key.split(&apos;:&apos;)
+    const middlewareNamespace = namedMiddleware[tokens[0]]
+    if (!middlewareNamespace) {
+      throw CE.RuntimeException.missingNamedMiddleware(tokens[0])
+    }
+    structured[middlewareNamespace] = Middleware.fetchParams(tokens[1])
+    return structured
+  }, {})
+}
+
+/**
+ * resolves an array of middleware namespaces from
+ * ioc container
+ *
+ * @method resolve
+ *
+ * @param  {Object} namedMiddlewareHash
+ * @param  {Boolean} [includeGlobal=false]
+ *
+ * @return {Array}
+ *
+ * @example
+ * Middleware.resolve({}, true) // all global
+ * Middleware.resolve(Middleware.formatNamedMiddleware([&apos;auth:basic&apos;, &apos;acl:user&apos;]))
+ *
+ * @public
+ */
+Middleware.resolve = function (namedMiddlewareHash, includeGlobal) {
+  const finalSet = includeGlobal ? Middleware.getGlobal().concat(_.keys(namedMiddlewareHash)) : _.keys(namedMiddlewareHash)
+  return _.map(finalSet, (item) =&gt; {
+    const func = Ioc.makeFunc(`${item}.handle`)
+    func.parameters = namedMiddlewareHash[item] || []
+    return func
+  })
+}
+
+/**
+ * composes middleware and calls them in sequence something similar
+ * to koa-compose.
+ *
+ * @method compose
+ *
+ * @param  {Array} Middleware - Array of middleware resolved from Ioc container
+ * @param  {Object} request - Http request object
+ * @param  {Object} response - Http response object
+ *
+ * @public
+ */
+Middleware.compose = function (middlewareList, request, response) {
+  function* noop() {}
+  return function* (next) {
+    next = next || noop()
+    _(middlewareList)
+      .map((middleware) =&gt; {
+        return typeof (middleware) === &apos;function&apos; ? _composeFunction(middleware) : _composeObject(middleware)
+      })
+      .forEachRight((middleware) =&gt; {
+        const values = [request, response, next].concat(middleware.parameters)
+        next = middleware.method.apply(middleware.instance, values)
+      })
+    return yield* next
+  }
+}</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

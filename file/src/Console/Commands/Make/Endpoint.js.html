@@ -56,7 +56,7 @@ class MakeEndpoint extends BaseCommand {
 
     if (this.checkIfExists([
         Helpers.appRoot(`/app/Http/Controllers/${name}Controller.js`),
-        Helpers.appRoot(`/app/Http/Routes/${name}Route.js`),
+        Helpers.appRoot(`/routes/${name}.js`),
         Helpers.appRoot(`/app/Http/Controllers/${name}Controller.js`),
         Helpers.appRoot(`/test/${name}Test.js`)
       ])) {
@@ -64,10 +64,9 @@ class MakeEndpoint extends BaseCommand {
     }
 
     this.mkdir(Helpers.appRoot(&apos;/app/Http/Controllers/&apos;));
-    this.mkdir(Helpers.appRoot(&apos;/app/Http/Routes/&apos;));
 
     this.ejsToFile(&apos;controller&apos;, Helpers.appRoot(`/app/Http/Controllers/${name}Controller.js`), data)
-      .ejsToFile(&apos;route&apos;, Helpers.appRoot(`/app/Http/Routes/${name}Route.js`), data)
+      .ejsToFile(&apos;route&apos;, Helpers.appRoot(`/routes/${name}.js`), data)
       .ejsToFile(&apos;test&apos;, Helpers.appRoot(`/test/${name}Test.js`), data);
 
     this.success(`${this.icon(&apos;success&apos;)} The endpoint &apos;${name}&apos; has been created.`);

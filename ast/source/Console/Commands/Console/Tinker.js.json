@@ -811,9 +811,9 @@
                                       "line": 16,
                                       "column": 40
                                     },
-                                    "identifierName": "app"
+                                    "identifierName": "App"
                                   },
-                                  "name": "app"
+                                  "name": "App"
                                 },
                                 "property": {
                                   "type": "Identifier",
@@ -2767,7 +2767,7 @@
         "postfix": false,
         "binop": null
       },
-      "value": "app",
+      "value": "App",
       "start": 340,
       "end": 343,
       "loc": {
